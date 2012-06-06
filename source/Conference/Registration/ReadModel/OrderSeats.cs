@@ -47,6 +47,7 @@ namespace Registration.ReadModel
         /// Gets or sets the order id.
         /// </summary>
         public Guid OrderId { get; set; }
+
         public IList<OrderSeat> Seats { get; set; }
     }
 }

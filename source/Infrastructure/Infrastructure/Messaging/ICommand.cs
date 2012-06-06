@@ -13,13 +13,13 @@
 
 namespace Infrastructure.Messaging
 {
-	using System;
-	
-	public interface ICommand
+    using System;
+
+    public interface ICommand
     {
-		/// <summary>
-		/// Gets the command identifier.
-		/// </summary>
-		Guid Id { get; }
+        /// <summary>
+        /// Gets the command identifier.
+        /// </summary>
+        Guid Id { get; }
     }
 }

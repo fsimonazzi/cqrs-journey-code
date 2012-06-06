@@ -37,20 +37,6 @@ namespace Registration
             Mapper.CreateMap<OrderPaymentConfirmed, OrderConfirmed>();
         }
 
-        protected Order(Guid id)
-            : base(id)
-        {
-            base.Handles<OrderPlaced>(this.OnOrderPlaced);
-            base.Handles<OrderUpdated>(this.OnOrderUpdated);
-            base.Handles<OrderPartiallyReserved>(this.OnOrderPartiallyReserved);
-            base.Handles<OrderReservationCompleted>(this.OnOrderReservationCompleted);
-            base.Handles<OrderExpired>(this.OnOrderExpired);
-            base.Handles<OrderPaymentConfirmed>(e => this.OnOrderConfirmed(Mapper.Map<OrderConfirmed>(e)));
-            base.Handles<OrderConfirmed>(this.OnOrderConfirmed);
-            base.Handles<OrderRegistrantAssigned>(this.OnOrderRegistrantAssigned);
-            base.Handles<OrderTotalsCalculated>(this.OnOrderTotalsCalculated);
-        }
-
         public Order(Guid id, IEnumerable<IVersionedEvent> history)
             : this(id)
         {
@@ -73,6 +59,20 @@ namespace Registration
             this.Update(new OrderTotalsCalculated { Total = totals.Total, Lines = totals.Lines != null ? totals.Lines.ToArray() : null, IsFreeOfCharge = totals.Total == 0m });
         }
 
+        protected Order(Guid id)
+            : base(id)
+        {
+            this.Handles<OrderPlaced>(this.OnOrderPlaced);
+            this.Handles<OrderUpdated>(this.OnOrderUpdated);
+            this.Handles<OrderPartiallyReserved>(this.OnOrderPartiallyReserved);
+            this.Handles<OrderReservationCompleted>(this.OnOrderReservationCompleted);
+            this.Handles<OrderExpired>(this.OnOrderExpired);
+            this.Handles<OrderPaymentConfirmed>(e => this.OnOrderConfirmed(Mapper.Map<OrderConfirmed>(e)));
+            this.Handles<OrderConfirmed>(this.OnOrderConfirmed);
+            this.Handles<OrderRegistrantAssigned>(this.OnOrderRegistrantAssigned);
+            this.Handles<OrderTotalsCalculated>(this.OnOrderTotalsCalculated);
+        }
+
         public void UpdateSeats(IEnumerable<OrderItem> items, IPricingService pricingService)
         {
             var all = ConvertItems(items);
@@ -85,7 +85,9 @@ namespace Registration
         public void MarkAsReserved(IPricingService pricingService, DateTime expirationDate, IEnumerable<SeatQuantity> reservedSeats)
         {
             if (this.isConfirmed)
+            {
                 throw new InvalidOperationException("Cannot modify a confirmed order.");
+            }
 
             var reserved = reservedSeats.ToList();
 
@@ -106,7 +108,9 @@ namespace Registration
         public void Expire()
         {
             if (this.isConfirmed)
+            {
                 throw new InvalidOperationException();
+            }
 
             this.Update(new OrderExpired());
         }
@@ -129,9 +133,16 @@ namespace Registration
         public SeatAssignments CreateSeatAssignments()
         {
             if (!this.isConfirmed)
+            {
                 throw new InvalidOperationException("Cannot create seat assignments for an order that isn't paid yet.");
+            }
 
             return new SeatAssignments(this.Id, this.seats.AsReadOnly());
+        }
+
+        private static List<SeatQuantity> ConvertItems(IEnumerable<OrderItem> items)
+        {
+            return items.Select(x => new SeatQuantity(x.SeatType, x.Quantity)).ToList();
         }
 
         private void OnOrderPlaced(OrderPlaced e)
@@ -170,11 +181,6 @@ namespace Registration
 
         private void OnOrderTotalsCalculated(OrderTotalsCalculated e)
         {
-        }
-
-        private static List<SeatQuantity> ConvertItems(IEnumerable<OrderItem> items)
-        {
-            return items.Select(x => new SeatQuantity(x.SeatType, x.Quantity)).ToList();
         }
     }
 }

@@ -90,7 +90,7 @@ namespace Infrastructure.MessageLog
 
             public IEnumerable<IEvent> Execute()
             {
-                return log.Query(this.criteria);
+                return this.log.Query(this.criteria);
             }
 
             public IEnumerator<IEvent> GetEnumerator()
@@ -105,31 +105,31 @@ namespace Infrastructure.MessageLog
 
             public IEventQuery WithTypeName(string typeName)
             {
-                criteria.TypeNames.Add(typeName);
+                this.criteria.TypeNames.Add(typeName);
                 return this;
             }
 
             public IEventQuery WithFullName(string fullName)
             {
-                criteria.FullNames.Add(fullName);
+                this.criteria.FullNames.Add(fullName);
                 return this;
             }
 
             public IEventQuery FromAssembly(string assemblyName)
             {
-                criteria.AssemblyNames.Add(assemblyName);
+                this.criteria.AssemblyNames.Add(assemblyName);
                 return this;
             }
 
             public IEventQuery FromNamespace(string @namespace)
             {
-                criteria.Namespaces.Add(@namespace);
+                this.criteria.Namespaces.Add(@namespace);
                 return this;
             }
 
             public IEventQuery FromSource(string sourceType)
             {
-                criteria.SourceTypes.Add(sourceType);
+                this.criteria.SourceTypes.Add(sourceType);
                 return this;
             }
         }

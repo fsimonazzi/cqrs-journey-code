@@ -22,10 +22,12 @@ namespace Registration.Events
         public class SeatAssignmentInfo
         {
             public int Position { get; set; }
+
             public Guid SeatType { get; set; }
         }
 
         public Guid OrderId { get; set; }
+
         public IEnumerable<SeatAssignmentInfo> Seats { get; set; }
     }
 }

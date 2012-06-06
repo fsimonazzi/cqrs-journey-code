@@ -16,6 +16,7 @@ namespace Infrastructure.BlobStorage
     public interface IBlobStorage
     {
         byte[] Find(string id);
+
         void Save(string id, string contentType, byte[] blob);
     }
 }

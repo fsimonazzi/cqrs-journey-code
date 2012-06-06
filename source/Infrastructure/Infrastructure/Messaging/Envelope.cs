@@ -53,12 +53,12 @@ namespace Infrastructure.Messaging
         public TimeSpan Delay { get; set; }
 
         /// <summary>
-        /// Gets the correlation id.
+        /// Gets or sets the correlation id.
         /// </summary>
         public string CorrelationId { get; set; }
 
         /// <summary>
-        /// Gets the correlation id.
+        /// Gets or sets the correlation id.
         /// </summary>
         public string MessageId { get; set; }
 

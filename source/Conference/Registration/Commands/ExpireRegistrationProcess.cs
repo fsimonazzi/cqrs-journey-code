@@ -24,6 +24,7 @@ namespace Registration.Commands
         }
 
         public Guid Id { get; set; }
+
         public Guid ProcessId { get; set; }
     }
 }

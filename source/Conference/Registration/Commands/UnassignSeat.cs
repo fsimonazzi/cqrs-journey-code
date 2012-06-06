@@ -26,6 +26,7 @@ namespace Registration.Commands
         public Guid Id { get; set; }
 
         public Guid SeatAssignmentsId { get; set; }
+
         public int Position { get; set; }
     }
 }

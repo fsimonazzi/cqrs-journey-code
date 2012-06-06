@@ -20,6 +20,7 @@ namespace Registration.ReadModel
     {
         [Key]
         public Guid SeatTypeId { get; set; }
+
         public string Name { get; set; }
     }
 }

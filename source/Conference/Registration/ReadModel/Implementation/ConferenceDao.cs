@@ -87,7 +87,9 @@ namespace Registration.ReadModel.Implementation
         {
             var distinctIds = seatTypes.Distinct().ToArray();
             if (distinctIds.Length == 0)
+            {
                 return new List<SeatTypeName>();
+            }
 
             using (var context = this.contextFactory.Invoke())
             {

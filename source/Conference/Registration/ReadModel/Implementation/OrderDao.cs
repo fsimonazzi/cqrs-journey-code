@@ -72,7 +72,9 @@ namespace Registration.ReadModel.Implementation
         {
             var blob = this.blobStorage.Find("SeatAssignments-" + assignmentsId);
             if (blob == null)
+            {
                 return null;
+            }
 
             using (var stream = new MemoryStream(blob))
             using (var reader = new StreamReader(stream))

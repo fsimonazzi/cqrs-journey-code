@@ -54,6 +54,7 @@ namespace Infrastructure.Messaging.Handling
                     invocations = new List<Tuple<Type, Action<Envelope>>>();
                     this.handlersByEventType[invocationTuple.Item1] = invocations;
                 }
+
                 invocations.Add(new Tuple<Type, Action<Envelope>>(handlerType, invocationTuple.Item2));
 
                 if (!this.dispatchersByEventType.ContainsKey(invocationTuple.Item1))
@@ -73,7 +74,7 @@ namespace Infrastructure.Messaging.Handling
 
         public void DispatchMessage(IEvent @event)
         {
-            this.DispatchMessage(@event, null, null, "");
+            this.DispatchMessage(@event, null, null, string.Empty);
         }
 
         public void DispatchMessage(IEvent @event, string messageId, string correlationId, string traceIdentifier)

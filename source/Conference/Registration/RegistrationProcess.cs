@@ -19,7 +19,6 @@ namespace Registration
     using System.Diagnostics;
     using System.Linq;
     using Infrastructure.Messaging;
-    using Infrastructure.Messaging.Handling;
     using Infrastructure.Processes;
     using Payments.Contracts.Events;
     using Registration.Commands;
@@ -45,15 +44,21 @@ namespace Registration
         }
 
         public Guid Id { get; private set; }
+
         public bool Completed { get; private set; }
+
         public Guid ConferenceId { get; set; }
+
         public Guid OrderId { get; internal set; }
+
         public Guid ReservationId { get; internal set; }
+
         public Guid SeatReservationCommandId { get; internal set; }
 
         // feels akward and possibly disrupting to store these properties here. Would it be better if instead of using 
         // current state values, we use event sourcing?
         public DateTime? ReservationAutoExpiration { get; internal set; }
+
         public Guid ExpirationCommandId { get; set; }
 
         public int StateValue { get; private set; }

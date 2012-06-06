@@ -140,29 +140,6 @@ namespace Registration.Handlers
             }
         }
 
-        private void UpdateReserved(Guid orderId, DateTime reservationExpiration, DraftOrder.States state, int orderVersion, IEnumerable<SeatQuantity> seats)
-        {
-            using (var context = this.contextFactory.Invoke())
-            {
-                var dto = context.Set<DraftOrder>().Include(x => x.Lines).First(x => x.OrderId == orderId);
-                if (WasNotAlreadyHandled(dto, orderVersion))
-                {
-                    foreach (var seat in seats)
-                    {
-                        var item = dto.Lines.Single(x => x.SeatType == seat.SeatType);
-                        item.ReservedSeats = seat.Quantity;
-                    }
-
-                    dto.State = state;
-                    dto.ReservationExpirationDate = reservationExpiration;
-
-                    dto.OrderVersion = orderVersion;
-
-                    context.Save(dto);
-                }
-            }
-        }
-
         private static bool WasNotAlreadyHandled(DraftOrder draftOrder, int eventVersion)
         {
             // This assumes that events will be handled in order, but we might get the same message more than once.
@@ -187,6 +164,29 @@ This read model generator has an expectation that the EventBus will deliver mess
                         draftOrder.OrderId,
                         eventVersion,
                         draftOrder.OrderVersion));
+            }
+        }
+
+        private void UpdateReserved(Guid orderId, DateTime reservationExpiration, DraftOrder.States state, int orderVersion, IEnumerable<SeatQuantity> seats)
+        {
+            using (var context = this.contextFactory.Invoke())
+            {
+                var dto = context.Set<DraftOrder>().Include(x => x.Lines).First(x => x.OrderId == orderId);
+                if (WasNotAlreadyHandled(dto, orderVersion))
+                {
+                    foreach (var seat in seats)
+                    {
+                        var item = dto.Lines.Single(x => x.SeatType == seat.SeatType);
+                        item.ReservedSeats = seat.Quantity;
+                    }
+
+                    dto.State = state;
+                    dto.ReservationExpirationDate = reservationExpiration;
+
+                    dto.OrderVersion = orderVersion;
+
+                    context.Save(dto);
+                }
             }
         }
     }

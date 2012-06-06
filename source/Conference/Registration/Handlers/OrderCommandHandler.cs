@@ -39,49 +39,50 @@ namespace Registration.Handlers
         public void Handle(RegisterToConference command)
         {
             var items = command.Seats.Select(t => new OrderItem(t.SeatType, t.Quantity)).ToList();
-            var order = repository.Find(command.OrderId);
+            var order = this.repository.Find(command.OrderId);
             if (order == null)
             {
-                order = new Order(command.OrderId, command.ConferenceId, items, pricingService);
+                order = new Order(command.OrderId, command.ConferenceId, items, this.pricingService);
             }
             else
             {
-                order.UpdateSeats(items, pricingService);
+                order.UpdateSeats(items, this.pricingService);
             }
 
-            repository.Save(order, command.Id.ToString());
+            this.repository.Save(order, command.Id.ToString());
         }
 
         public void Handle(MarkSeatsAsReserved command)
         {
-            var order = repository.Get(command.OrderId);
+            var order = this.repository.Get(command.OrderId);
             order.MarkAsReserved(this.pricingService, command.Expiration, command.Seats);
-            repository.Save(order, command.Id.ToString());
+            this.repository.Save(order, command.Id.ToString());
         }
 
         public void Handle(RejectOrder command)
         {
-            var order = repository.Find(command.OrderId);
+            var order = this.repository.Find(command.OrderId);
+
             // Explicitly idempotent. 
             if (order != null)
             {
                 order.Expire();
-                repository.Save(order, command.Id.ToString());
+                this.repository.Save(order, command.Id.ToString());
             }
         }
 
         public void Handle(AssignRegistrantDetails command)
         {
-            var order = repository.Get(command.OrderId);
+            var order = this.repository.Get(command.OrderId);
             order.AssignRegistrant(command.FirstName, command.LastName, command.Email);
-            repository.Save(order, command.Id.ToString());
+            this.repository.Save(order, command.Id.ToString());
         }
 
         public void Handle(ConfirmOrder command)
         {
-            var order = repository.Get(command.OrderId);
+            var order = this.repository.Get(command.OrderId);
             order.Confirm();
-            repository.Save(order, command.Id.ToString());
+            this.repository.Save(order, command.Id.ToString());
         }
     }
 }

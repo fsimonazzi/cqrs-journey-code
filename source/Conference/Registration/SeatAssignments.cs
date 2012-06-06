@@ -28,8 +28,11 @@ namespace Registration
             {
                 this.Attendee = new PersonalInfo();
             }
+
             public int Position { get; set; }
+
             public Guid SeatType { get; set; }
+
             public PersonalInfo Attendee { get; set; }
         }
 
@@ -62,7 +65,7 @@ namespace Registration
                 }
             }
 
-            base.Update(new SeatAssignmentsCreated { OrderId = orderId, Seats = all });
+            this.Update(new SeatAssignmentsCreated { OrderId = orderId, Seats = all });
         }
 
         public SeatAssignments(Guid id, IEnumerable<IVersionedEvent> history)
@@ -74,23 +77,27 @@ namespace Registration
         private SeatAssignments(Guid id)
             : base(id)
         {
-            base.Handles<SeatAssignmentsCreated>(this.OnCreated);
-            base.Handles<SeatAssigned>(this.OnSeatAssigned);
-            base.Handles<SeatUnassigned>(this.OnSeatUnassigned);
+            this.Handles<SeatAssignmentsCreated>(this.OnCreated);
+            this.Handles<SeatAssigned>(this.OnSeatAssigned);
+            this.Handles<SeatUnassigned>(this.OnSeatUnassigned);
 
             // NOTE: we need to add an empty Handles here so that the base class can make 
             // sure we didn't omit a handler by mistake.
-            base.Handles<SeatAssignmentUpdated>(this.OnSeatAssignmentUpdated);
+            this.Handles<SeatAssignmentUpdated>(this.OnSeatAssignmentUpdated);
         }
 
         public void AssignSeat(int position, PersonalInfo attendee)
         {
             if (string.IsNullOrEmpty(attendee.Email))
+            {
                 throw new ArgumentNullException("attendee.Email");
+            }
 
             SeatAssignment current;
             if (!this.seats.TryGetValue(position, out current))
+            {
                 throw new ArgumentOutOfRangeException("position");
+            }
 
             if (!attendee.Email.Equals(current.Attendee.Email, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -121,7 +128,9 @@ namespace Registration
         {
             SeatAssignment current;
             if (!this.seats.TryGetValue(position, out current))
+            {
                 throw new ArgumentOutOfRangeException("position");
+            }
 
             if (current.Attendee.Email != null)
             {

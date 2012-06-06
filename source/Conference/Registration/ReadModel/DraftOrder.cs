@@ -62,7 +62,9 @@ namespace Registration.ReadModel
         }
 
         public int OrderVersion { get; internal set; }
+
         public string RegistrantEmail { get; internal set; }
+
         public string AccessCode { get; internal set; }
     }
 }

@@ -24,7 +24,9 @@ namespace Registration.Events
         }
 
         public int Position { get; set; }
+
         public Guid SeatType { get; set; }
+
         public PersonalInfo Attendee { get; set; }
     }
 }

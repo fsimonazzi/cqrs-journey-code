@@ -41,14 +41,23 @@ namespace Registration.ReadModel
 
         [Key]
         public Guid Id { get; set; }
+
         public string Code { get; set; }
+
         public string Name { get; set; }
+
         public string Description { get; set; }
+
         public string Location { get; set; }
+
         public string Tagline { get; set; }
+
         public string TwitterSearch { get; set; }
+
         public DateTimeOffset StartDate { get; set; }
+
         public ICollection<SeatType> Seats { get; set; }
+
         public int SeatsAvailabilityVersion { get; set; }
 
         public bool IsPublished { get; set; }

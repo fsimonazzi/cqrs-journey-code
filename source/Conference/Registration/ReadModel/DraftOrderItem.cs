@@ -29,8 +29,11 @@ namespace Registration.ReadModel
         }
 
         public Guid Id { get; private set; }
+
         public Guid SeatType { get; set; }
+
         public int RequestedSeats { get; set; }
+
         public int ReservedSeats { get; set; }
     }
 }

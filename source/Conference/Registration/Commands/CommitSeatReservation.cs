@@ -26,6 +26,7 @@ namespace Registration.Commands
         public Guid Id { get; private set; }
 
         public Guid ConferenceId { get; set; }
+
         public Guid ReservationId { get; set; }
     }
 }

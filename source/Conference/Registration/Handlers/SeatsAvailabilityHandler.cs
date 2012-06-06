@@ -62,7 +62,9 @@ namespace Registration.Handlers
         {
             var availability = this.repository.Find(command.ConferenceId);
             if (availability == null)
+            {
                 availability = new SeatsAvailability(command.ConferenceId);
+            }
 
             availability.AddSeats(command.SeatType, command.Quantity);
             this.repository.Save(availability, command.Id.ToString());
@@ -72,7 +74,9 @@ namespace Registration.Handlers
         {
             var availability = this.repository.Find(command.ConferenceId);
             if (availability == null)
+            {
                 availability = new SeatsAvailability(command.ConferenceId);
+            }
 
             availability.RemoveSeats(command.SeatType, command.Quantity);
             this.repository.Save(availability, command.Id.ToString());

@@ -42,7 +42,7 @@ namespace Registration
         {
             using (var context = this.contextFactory.Invoke())
             {
-                lock (lockObject)
+                lock (this.lockObject)
                 {
                     var process = context.Find(x => x.OrderId == @event.SourceId && x.Completed == false);
                     if (process == null)
@@ -60,7 +60,7 @@ namespace Registration
         {
             using (var context = this.contextFactory.Invoke())
             {
-                lock (lockObject)
+                lock (this.lockObject)
                 {
                     var process = context.Find(x => x.OrderId == @event.SourceId && x.Completed == false);
                     if (process != null)
@@ -81,7 +81,7 @@ namespace Registration
         {
             using (var context = this.contextFactory.Invoke())
             {
-                lock (lockObject)
+                lock (this.lockObject)
                 {
                     var process = context.Find(x => x.ReservationId == envelope.Body.ReservationId && x.Completed == false);
                     if (process != null)
@@ -102,7 +102,7 @@ namespace Registration
         {
             using (var context = this.contextFactory.Invoke())
             {
-                lock (lockObject)
+                lock (this.lockObject)
                 {
                     var process = context.Find(x => x.OrderId == @event.SourceId && x.Completed == false);
                     if (process != null)
@@ -123,7 +123,7 @@ namespace Registration
         {
             using (var context = this.contextFactory.Invoke())
             {
-                lock (lockObject)
+                lock (this.lockObject)
                 {
                     // TODO should not skip the completed processes and move them to a "manual intervention" state
                     var process = context.Find(x => x.OrderId == @event.PaymentSourceId && x.Completed == false);
@@ -145,7 +145,7 @@ namespace Registration
         {
             using (var context = this.contextFactory.Invoke())
             {
-                lock (lockObject)
+                lock (this.lockObject)
                 {
                     var process = context.Find(x => x.Id == command.ProcessId && x.Completed == false);
                     if (process != null)

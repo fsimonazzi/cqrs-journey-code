@@ -31,10 +31,10 @@ namespace Registration
         public SeatsAvailability(Guid id)
             : base(id)
         {
-            base.Handles<AvailableSeatsChanged>(this.OnAvailableSeatsChanged);
-            base.Handles<SeatsReserved>(this.OnSeatsReserved);
-            base.Handles<SeatsReservationCommitted>(this.OnSeatsReservationCommitted);
-            base.Handles<SeatsReservationCancelled>(this.OnSeatsReservationCancelled);
+            this.Handles<AvailableSeatsChanged>(this.OnAvailableSeatsChanged);
+            this.Handles<SeatsReserved>(this.OnSeatsReserved);
+            this.Handles<SeatsReservationCommitted>(this.OnSeatsReservationCommitted);
+            this.Handles<SeatsReservationCancelled>(this.OnSeatsReservationCancelled);
             // TODO: raise event
             // TODO: We are assuming SeatsAvailability.Id correlates directly to ConferenceId. We should avoid re-using the same Id for different aggregates!
         }
@@ -47,12 +47,12 @@ namespace Registration
 
         public void AddSeats(Guid seatType, int quantity)
         {
-            base.Update(new AvailableSeatsChanged { Seats = new[] { new SeatQuantity(seatType, quantity) } });
+            this.Update(new AvailableSeatsChanged { Seats = new[] { new SeatQuantity(seatType, quantity) } });
         }
 
         public void RemoveSeats(Guid seatType, int quantity)
         {
-            base.Update(new AvailableSeatsChanged { Seats = new[] { new SeatQuantity(seatType, -quantity) } });
+            this.Update(new AvailableSeatsChanged { Seats = new[] { new SeatQuantity(seatType, -quantity) } });
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Registration
                 AvailableSeatsChanged = difference.Select(x => new SeatQuantity(x.Key, -x.Value.DeltaSinceLast)).Where(x => x.Quantity != 0).ToList()
             };
 
-            base.Update(reservation);
+            this.Update(reservation);
         }
 
         public void CancelReservation(Guid reservationId)
@@ -102,7 +102,7 @@ namespace Registration
             List<SeatQuantity> reservation;
             if (this.pendingReservations.TryGetValue(reservationId, out reservation))
             {
-                base.Update(new SeatsReservationCancelled
+                this.Update(new SeatsReservationCancelled
                 {
                     ReservationId = reservationId,
                     AvailableSeatsChanged = reservation.Select(x => new SeatQuantity(x.SeatType, x.Quantity)).ToList()
@@ -114,19 +114,23 @@ namespace Registration
         {
             if (this.pendingReservations.ContainsKey(reservationId))
             {
-                base.Update(new SeatsReservationCommitted { ReservationId = reservationId });
+                this.Update(new SeatsReservationCommitted { ReservationId = reservationId });
             }
         }
 
         private class SeatDifference
         {
             public int Wanted { get; set; }
+
             public int Existing { get; set; }
+
             public int Remaining { get; set; }
+
             public int Actual
             {
                 get { return Math.Min(this.Wanted, Math.Max(this.Remaining, 0) + this.Existing); }
             }
+
             public int DeltaSinceLast
             {
                 get { return this.Actual - this.Existing; }

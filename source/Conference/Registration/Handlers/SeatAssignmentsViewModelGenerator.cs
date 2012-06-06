@@ -35,6 +35,12 @@ namespace Registration.Handlers
         private readonly ITextSerializer serializer;
         private readonly IConferenceDao conferenceDao;
 
+        static SeatAssignmentsViewModelGenerator()
+        {
+            Mapper.CreateMap<SeatAssigned, OrderSeat>();
+            Mapper.CreateMap<SeatAssignmentUpdated, OrderSeat>();
+        }
+
         public SeatAssignmentsViewModelGenerator(
             IConferenceDao conferenceDao,
             IBlobStorage storage,
@@ -45,12 +51,6 @@ namespace Registration.Handlers
             this.serializer = serializer;
         }
 
-        static SeatAssignmentsViewModelGenerator()
-        {
-            Mapper.CreateMap<SeatAssigned, OrderSeat>();
-            Mapper.CreateMap<SeatAssignmentUpdated, OrderSeat>();
-        }
-
         public void Handle(SeatAssignmentsCreated @event)
         {
             var seatTypes = this.conferenceDao.GetSeatTypeNames(@event.Seats.Select(x => x.SeatType))
@@ -59,38 +59,40 @@ namespace Registration.Handlers
             var dto = new OrderSeats(@event.SourceId, @event.OrderId, @event.Seats.Select(i =>
                 new OrderSeat(i.Position, seatTypes.TryGetValue(i.SeatType))));
 
-            Save(dto);
+            this.Save(dto);
         }
 
         public void Handle(SeatAssigned @event)
         {
-            var dto = Find(@event.SourceId);
+            var dto = this.Find(@event.SourceId);
             var seat = dto.Seats.First(x => x.Position == @event.Position);
             Mapper.Map(@event, seat);
-            Save(dto);
+            this.Save(dto);
         }
 
         public void Handle(SeatUnassigned @event)
         {
-            var dto = Find(@event.SourceId);
+            var dto = this.Find(@event.SourceId);
             var seat = dto.Seats.First(x => x.Position == @event.Position);
             seat.Attendee.Email = seat.Attendee.FirstName = seat.Attendee.LastName = null;
-            Save(dto);
+            this.Save(dto);
         }
 
         public void Handle(SeatAssignmentUpdated @event)
         {
-            var dto = Find(@event.SourceId);
+            var dto = this.Find(@event.SourceId);
             var seat = dto.Seats.First(x => x.Position == @event.Position);
             Mapper.Map(@event, seat);
-            Save(dto);
+            this.Save(dto);
         }
 
         private OrderSeats Find(Guid id)
         {
             var dto = this.storage.Find("SeatAssignments-" + id);
             if (dto == null)
+            {
                 return null;
+            }
 
             using (var stream = new MemoryStream(dto))
             using (var reader = new StreamReader(stream))

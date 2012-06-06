@@ -35,7 +35,10 @@ namespace Infrastructure.EventSourcing
             get { return this.id; }
         }
 
-        public int Version { get { return this.version; } }
+        public int Version
+        {
+            get { return this.version; }
+        }
 
         public IEnumerable<IVersionedEvent> Events
         {

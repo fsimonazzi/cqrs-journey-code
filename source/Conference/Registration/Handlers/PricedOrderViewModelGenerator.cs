@@ -163,7 +163,7 @@ namespace Registration.Handlers
             {
                 var dto = context.Find<PricedOrder>(@event.OrderId);
                 dto.AssignmentsId = @event.SourceId;
-                // Note: @event.Version does not correspond to order.Version.;
+                //// Note: @event.Version does not correspond to order.Version.;
                 context.SaveChanges();
             }
         }

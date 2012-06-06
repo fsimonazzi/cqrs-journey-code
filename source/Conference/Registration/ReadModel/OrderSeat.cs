@@ -13,7 +13,6 @@
 
 namespace Registration.ReadModel
 {
-
     public class OrderSeat
     {
         public OrderSeat()
@@ -29,7 +28,9 @@ namespace Registration.ReadModel
         }
 
         public int Position { get; set; }
+
         public string SeatName { get; set; }
+
         public PersonalInfo Attendee { get; set; }
     }
 }

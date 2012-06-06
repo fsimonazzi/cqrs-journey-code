@@ -34,9 +34,13 @@ namespace Registration.ReadModel
         public Guid? AssignmentsId { get; set; }
 
         public IList<PricedOrderLine> Lines { get; set; }
+
         public decimal Total { get; set; }
+
         public int OrderVersion { get; set; }
+
         public bool IsFreeOfCharge { get; set; }
+
         public DateTime? ReservationExpirationDate { get; set; }
     }
 
@@ -49,10 +53,15 @@ namespace Registration.ReadModel
 
         [Key]
         public Guid LineId { get; set; }
+
         public Guid OrderId { get; set; }
+
         public string Description { get; set; }
+
         public decimal UnitPrice { get; set; }
+
         public int Quantity { get; set; }
+
         public decimal LineTotal { get; set; }
     }
 }
