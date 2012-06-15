@@ -22,27 +22,33 @@ namespace Infrastructure.Azure
     /// </summary>
     public static class BusSettingsExtensions
     {
-        public static MessagingFactory CreateMessagingFactory(this ServiceBusSettings settings)
+        public static MessageReceiver CreateMessageReceiver(this ServiceBusSettings settings, string topic, string subscription)
         {
             var tokenProvider = TokenProvider.CreateSharedSecretTokenProvider(settings.TokenIssuer, settings.TokenAccessKey);
             var serviceUri = ServiceBusEnvironment.CreateServiceUri(settings.ServiceUriScheme, settings.ServiceNamespace, settings.ServicePath);
-            return MessagingFactory.Create(serviceUri, tokenProvider);
-        }
+            var messagingFactory = MessagingFactory.Create(serviceUri, tokenProvider);
 
-        public static MessageReceiver CreateMessageReceiver(this ServiceBusSettings settings, string topic, string subscription)
-        {
-            return CreateMessagingFactory(settings).CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(topic, subscription));
+            return messagingFactory.CreateMessageReceiver(SubscriptionClient.FormatDeadLetterPath(topic, subscription));
         }
 
         public static SubscriptionClient CreateSubscriptionClient(this ServiceBusSettings settings, string topic, string subscription, ReceiveMode mode = ReceiveMode.PeekLock)
         {
-            return CreateMessagingFactory(settings).CreateSubscriptionClient(topic, subscription, mode);
+            var tokenProvider = TokenProvider.CreateSharedSecretTokenProvider(settings.TokenIssuer, settings.TokenAccessKey);
+            var serviceUri = ServiceBusEnvironment.CreateServiceUri(settings.ServiceUriScheme, settings.ServiceNamespace, settings.ServicePath);
+            var messagingFactory = MessagingFactory.Create(serviceUri, tokenProvider);
+
+            return messagingFactory.CreateSubscriptionClient(topic, subscription, mode);
         }
 
         public static TopicClient CreateTopicClient(this ServiceBusSettings settings, string topic)
         {
-            return CreateMessagingFactory(settings).CreateTopicClient(topic);
+            var tokenProvider = TokenProvider.CreateSharedSecretTokenProvider(settings.TokenIssuer, settings.TokenAccessKey);
+            var serviceUri = ServiceBusEnvironment.CreateServiceUri(settings.ServiceUriScheme, settings.ServiceNamespace, settings.ServicePath);
+            var messagingFactory = MessagingFactory.Create(serviceUri, tokenProvider);
+
+            return messagingFactory.CreateTopicClient(topic);
         }
+
 
         public static void CreateTopic(this ServiceBusSettings settings, string topic)
         {

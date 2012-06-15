@@ -22,6 +22,7 @@ namespace Infrastructure.Azure.Messaging
     using Infrastructure.Azure.Utils;
     using Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandling.ServiceBus;
     using Microsoft.Practices.TransientFaultHandling;
+    using Microsoft.ServiceBus;
     using Microsoft.ServiceBus.Messaging;
 
     /// <summary>
@@ -32,6 +33,9 @@ namespace Infrastructure.Azure.Messaging
     {
         private static readonly TimeSpan AcceptSessionLongPollingTimeout = TimeSpan.FromMinutes(1);
 
+        private readonly TokenProvider tokenProvider;
+        private readonly Uri serviceUri;
+        private readonly ServiceBusSettings settings;
         private readonly string topic;
         private string subscription;
         private readonly object lockObject = new object();
@@ -50,8 +54,12 @@ namespace Infrastructure.Azure.Messaging
         /// Initializes a new instance of the <see cref="SubscriptionReceiver"/> class, 
         /// automatically creating the topic and subscription if they don't exist.
         /// </summary>
-        public SessionSubscriptionReceiver(MessagingFactory messagingFactory, string topic, string subscription)
-            : this(messagingFactory, topic, subscription, new ExponentialBackoff(10, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(1)))
+        public SessionSubscriptionReceiver(ServiceBusSettings settings, string topic, string subscription)
+            : this(
+                settings,
+                topic,
+                subscription,
+                new ExponentialBackoff(10, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(1)))
         {
         }
 
@@ -59,19 +67,28 @@ namespace Infrastructure.Azure.Messaging
         /// Initializes a new instance of the <see cref="SessionSubscriptionReceiver"/> class, 
         /// automatically creating the topic and subscription if they don't exist.
         /// </summary>
-        protected SessionSubscriptionReceiver(MessagingFactory messagingFactory, string topic, string subscription, RetryStrategy backgroundRetryStrategy)
+        protected SessionSubscriptionReceiver(ServiceBusSettings settings, string topic, string subscription, RetryStrategy backgroundRetryStrategy)
         {
+            this.settings = settings;
             this.topic = topic;
             this.subscription = subscription;
+
+            this.tokenProvider = TokenProvider.CreateSharedSecretTokenProvider(settings.TokenIssuer, settings.TokenAccessKey);
+            this.serviceUri = ServiceBusEnvironment.CreateServiceUri(settings.ServiceUriScheme, settings.ServiceNamespace, settings.ServicePath);
+
+            var messagingFactory = MessagingFactory.Create(this.serviceUri, tokenProvider);
             this.client = messagingFactory.CreateSubscriptionClient(topic, subscription);
             this.client.PrefetchCount = 50;
 
             this.receiveRetryPolicy = new RetryPolicy<ServiceBusTransientErrorDetectionStrategy>(backgroundRetryStrategy);
-            this.receiveRetryPolicy.Retrying += (s, e) => Trace.TraceWarning(
-                "An error occurred in attempt number {1} to receive a message from subscription {2}: {0}",
-                e.LastException.Message,
-                e.CurrentRetryCount,
-                this.subscription);
+            this.receiveRetryPolicy.Retrying += (s, e) =>
+                {
+                    Trace.TraceWarning(
+                        "An error occurred in attempt number {1} to receive a message from subscription {2}: {0}",
+                        e.LastException.Message,
+                        e.CurrentRetryCount,
+                        this.subscription);
+                };
         }
 
         /// <summary>
