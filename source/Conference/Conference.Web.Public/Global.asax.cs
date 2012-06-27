@@ -13,16 +13,20 @@
 
 namespace Conference.Web.Public
 {
+    using System;
     using System.Linq;
     using System.Runtime.Caching;
+    using System.Threading;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.Routing;
     using Conference.Common;
     using Conference.Web.Utils;
     using Infrastructure.BlobStorage;
+    using Infrastructure.Instrumentation;
     using Infrastructure.Sql.BlobStorage;
     using Microsoft.Practices.Unity;
+    using Microsoft.WindowsAzure;
     using Microsoft.WindowsAzure.ServiceRuntime;
     using Payments.ReadModel;
     using Payments.ReadModel.Implementation;
@@ -32,6 +36,8 @@ namespace Conference.Web.Public
     public partial class MvcApplication : HttpApplication
     {
         private IUnityContainer container;
+        private Timer instrumentationTimer;
+        private InfrastructureInstrumentation instrumentation;
 
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
@@ -81,6 +87,12 @@ namespace Conference.Web.Public
                 System.Diagnostics.Trace.AutoFlush = true;
             }
 
+            var instrumentationEnabled = CloudConfigurationManager.GetSetting("InstrumentationEnabled") == "true";
+
+            this.instrumentation = new InfrastructureInstrumentation(instrumentationEnabled, "web.public");
+            this.instrumentationTimer = new Timer(_ => this.instrumentation.UpdateThreadPoolCounters());
+            this.instrumentationTimer.Change(TimeSpan.Zero, TimeSpan.FromSeconds(10));
+
             this.OnStart();
         }
 
@@ -89,6 +101,8 @@ namespace Conference.Web.Public
             this.OnStop();
 
             this.container.Dispose();
+            this.instrumentationTimer.Dispose();
+            this.instrumentation.Dispose();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
