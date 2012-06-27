@@ -17,6 +17,7 @@ namespace Registration.Handlers
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Runtime.Caching;
     using System.Text;
     using Conference;
     using Infrastructure.BlobStorage;
@@ -37,11 +38,13 @@ namespace Registration.Handlers
     {
         private readonly IBlobStorage blobStorage;
         private readonly ITextSerializer serializer;
+        private readonly MemoryCache seatDescriptionsCache;
 
         public PricedOrderViewModelGenerator(IBlobStorage blobStorage, ITextSerializer serializer)
         {
             this.blobStorage = blobStorage;
             this.serializer = serializer;
+            this.seatDescriptionsCache = new MemoryCache("SeatDescriptionsCache");
         }
 
         public static string GetPricedOrderBlobId(Guid sourceId)
@@ -92,8 +95,19 @@ namespace Registration.Handlers
                 return;
             }
 
-            var conferenceSeatDescriptions =
-                this.Find<PricedOrderConferenceSeatTypeDescriptions>(GetConferenceSeatsDescriptionBlobId(dto.ConferenceId)) ?? new PricedOrderConferenceSeatTypeDescriptions();
+            PricedOrderConferenceSeatTypeDescriptions conferenceSeatDescriptions;
+
+            var conferenceId = dto.ConferenceId.ToString();
+            if ((conferenceSeatDescriptions = (PricedOrderConferenceSeatTypeDescriptions)this.seatDescriptionsCache.Get(conferenceId)) == null)
+            {
+                // even though we went got a fresh version we don't want to overwrite a fresher version set by the event handler for seat descriptiosn
+                this.seatDescriptionsCache.AddOrGetExisting(
+                    conferenceId,
+                    (conferenceSeatDescriptions = 
+                        this.Find<PricedOrderConferenceSeatTypeDescriptions>(GetConferenceSeatsDescriptionBlobId(dto.ConferenceId)) 
+                        ?? new PricedOrderConferenceSeatTypeDescriptions()),
+                    new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(5) });
+            }
 
             foreach (var orderLine in @event.Lines)
             {
@@ -226,6 +240,7 @@ This read model generator has an expectation that the EventBus will deliver mess
             dto.SeatDescriptions[seatId] = name;
 
             this.Save(dto, GetConferenceSeatsDescriptionBlobId(conferenceId));
+            this.seatDescriptionsCache.Set(conferenceId.ToString(), dto, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(5) });
         }
     }
 }

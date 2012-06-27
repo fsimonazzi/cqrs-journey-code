@@ -88,8 +88,6 @@ namespace Infrastructure.Azure.BlobStorage
                     {
                         stream.Write(blob, 0, blob.Length);
                     }
-
-                    blobReference.Properties.ContentType = contentType;
                 });
         }
 
