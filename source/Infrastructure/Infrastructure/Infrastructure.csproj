@@ -38,7 +38,9 @@
       <HintPath>..\..\packages\Newtonsoft.Json.4.5.7\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -52,6 +54,13 @@
     <Compile Include="Database\IDataContext.cs" />
     <Compile Include="EntityNotFoundException.cs" />
     <Compile Include="EventSourcing\IMementoOriginator.cs" />
+    <Compile Include="Instrumentation\InfrastructureInstrumentation.cs" />
+    <Compile Include="Instrumentation\InstrumentationInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Instrumentation\InstrumentationInstaller.Designer.cs">
+      <DependentUpon>InstrumentationInstaller.cs</DependentUpon>
+    </Compile>
     <Compile Include="IProcessor.cs" />
     <Compile Include="MessageLog\EventLogExtensions.cs" />
     <Compile Include="MessageLog\IEventLogReader.cs" />

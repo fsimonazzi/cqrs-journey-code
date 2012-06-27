@@ -21,6 +21,7 @@ namespace WorkerRoleCommandProcessor
     using System.Threading.Tasks;
     using Conference.Common;
     using Conference.Common.Entity;
+    using Infrastructure.Instrumentation;
     using Microsoft.WindowsAzure;
     using Microsoft.WindowsAzure.Diagnostics;
     using Microsoft.WindowsAzure.ServiceRuntime;
@@ -37,6 +38,8 @@ namespace WorkerRoleCommandProcessor
             MaintenanceMode.RefreshIsInMaintainanceMode();
             if (!MaintenanceMode.IsInMaintainanceMode)
             {
+                var instrumentation = new InfrastructureInstrumentation(this.InstrumentationEnabled, "worker role");
+
                 Trace.WriteLine("Starting the command processor", "Information");
                 using (var processor = new ConferenceProcessor(this.InstrumentationEnabled))
                 {
@@ -44,6 +47,7 @@ namespace WorkerRoleCommandProcessor
 
                     while (this.running)
                     {
+                        instrumentation.UpdateThreadPoolCounters();
                         Thread.Sleep(10000);
                     }
 

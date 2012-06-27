@@ -1,8 +1,8 @@
-﻿// ==============================================================================================================
+// ==============================================================================================================
 // Microsoft patterns & practices
 // CQRS Journey project
 // ==============================================================================================================
-// ©2012 Microsoft. All rights reserved. Certain content used with permission from contributors
+// �2012 Microsoft. All rights reserved. Certain content used with permission from contributors
 // http://cqrsjourney.github.com/contributors/members
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance 
 // with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -11,11 +11,19 @@
 // See the License for the specific language governing permissions and limitations under the License.
 // ==============================================================================================================
 
-namespace Infrastructure.Azure.Instrumentation
+namespace Infrastructure.Azure.BlobStorage
 {
-    public static class Constants
+    using Microsoft.WindowsAzure.StorageClient;
+
+    public interface IBlobRecord
     {
-        public const string ReceiversPerformanceCountersCategory = "CQRS - Azure Infrastructure - Receivers";
-        public const string EventPublishersPerformanceCountersCategory = "CQRS - Azure Infrastructure - Event Publishers";
+        string PartitionKey { get; }
+        string RowKey { get; }
+        string Blob { get; set; }
+    }
+
+    public class BlobTableServiceEntity : TableServiceEntity, IBlobRecord
+    {
+        public string Blob { get; set; }
     }
 }
