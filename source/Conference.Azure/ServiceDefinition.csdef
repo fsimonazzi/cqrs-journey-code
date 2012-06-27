@@ -43,6 +43,9 @@
       <Setting name="Diagnostics.PerformanceCounterSampleRate" />
       <Setting name="DbContext.Payments" />
       <Setting name="DbContext.ConferenceRegistration" />
+      <Setting name="DbContext.ConferenceRegistrationDraftOrders" />
+      <Setting name="DbContext.ConferenceRegistrationPricedOrders" />
+      <Setting name="DbContext.EventStore" />
       <Setting name="DbContext.SqlBus" />
       <Setting name="DbContext.BlobStorage" />
       <Setting name="MaintenanceMode" />
@@ -70,14 +73,16 @@
       <Setting name="Diagnostics.LogLevelFilter" />
       <Setting name="Diagnostics.PerformanceCounterSampleRate" />
       <Setting name="DbContext.Payments" />
-      <Setting name="DbContext.EventStore" />
-      <Setting name="DbContext.BlobStorage" />
       <Setting name="DbContext.ConferenceRegistrationProcesses" />
       <Setting name="DbContext.ConferenceRegistration" />
-      <Setting name="DbContext.SqlBus" />
+      <Setting name="DbContext.ConferenceRegistrationDraftOrders" />
+      <Setting name="DbContext.ConferenceRegistrationPricedOrders" />
       <Setting name="DbContext.ConferenceManagement" />
-      <Setting name="MaintenanceMode" />
+      <Setting name="DbContext.EventStore" />
+      <Setting name="DbContext.SqlBus" />
       <Setting name="DbContext.MessageLog" />
+      <Setting name="DbContext.BlobStorage" />
+      <Setting name="MaintenanceMode" />
       <Setting name="InstrumentationEnabled" />
     </ConfigurationSettings>
     <Startup>

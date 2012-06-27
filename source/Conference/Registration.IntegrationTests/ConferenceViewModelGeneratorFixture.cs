@@ -40,7 +40,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
             bus.Setup(x => x.Send(It.IsAny<IEnumerable<Envelope<ICommand>>>()))
                 .Callback<IEnumerable<Envelope<ICommand>>>(x => this.commands.AddRange(x.Select(e => e.Body)));
 
-            this.sut = new ConferenceViewModelGenerator(() => new ConferenceRegistrationDbContext(dbName), bus.Object);
+            this.sut = new ConferenceViewModelGenerator(() => new ConferenceRegistrationDbContext(conferenceDbName), bus.Object);
         }
     }
 
@@ -66,7 +66,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 EndDate = DateTime.UtcNow.Date,
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dto = context.Find<Conference>(conferenceId);
 
@@ -123,7 +123,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 EndDate = DateTime.UtcNow.Date,
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dto = context.Find<Conference>(conferenceId);
 
@@ -145,7 +145,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 SourceId = conferenceId,
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dto = context.Find<Conference>(conferenceId);
 
@@ -167,7 +167,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 SourceId = conferenceId,
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dto = context.Find<Conference>(conferenceId);
 
@@ -190,7 +190,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 Price = 200,
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dto = context.Set<Conference>()
                     .Where(x => x.Id == conferenceId)
@@ -252,7 +252,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 Price = 100,
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dto = context.Set<Conference>()
                     .Where(x => x.Id == conferenceId)
@@ -357,7 +357,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 Seats = new[] { new SeatQuantity { SeatType = seatId, Quantity = 200 } }
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dtos = context.Set<Conference>()
                     .Where(x => x.Id == conferenceId)
@@ -401,7 +401,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 AvailableSeatsChanged = new[] { new SeatQuantity { SeatType = seatId, Quantity = -50 } }
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dtos = context.Set<Conference>()
                     .Where(x => x.Id == conferenceId)
@@ -452,7 +452,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 AvailableSeatsChanged = new[] { new SeatQuantity { SeatType = seatId, Quantity = 50 } }
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dtos = context.Set<Conference>()
                     .Where(x => x.Id == conferenceId)
@@ -503,7 +503,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 AvailableSeatsChanged = new[] { new SeatQuantity { SeatType = seatId, Quantity = -50 } }
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dtos = context.Set<Conference>()
                     .Where(x => x.Id == conferenceId)
@@ -554,7 +554,7 @@ namespace Registration.Tests.ConferenceViewModelGeneratorFixture
                 Seats = new[] { new SeatQuantity { SeatType = seatId, Quantity = 200 } }
             });
 
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = new ConferenceRegistrationDbContext(conferenceDbName))
             {
                 var dtos = context.Set<Conference>()
                     .Where(x => x.Id == conferenceId)

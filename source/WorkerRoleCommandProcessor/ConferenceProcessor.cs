@@ -92,10 +92,22 @@ namespace WorkerRoleCommandProcessor
                 new TransientLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<Func<DbContext>>("payments"), typeof(IEventBus)));
 
-            container.RegisterType<ConferenceRegistrationDbContext>(new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistration"));
+            container.RegisterType<ConferenceRegistrationDbContext>("Conferences", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistration"));
+            container.RegisterType<ConferenceRegistrationDbContext>("DraftOrders", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistrationDraftOrders"));
+            container.RegisterType<ConferenceRegistrationDbContext>("PricedOrders", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistrationPricedOrders"));
 
-            container.RegisterType<IConferenceDao, ConferenceDao>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IOrderDao, OrderDao>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IOrderDao, OrderDao>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(
+                    new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("DraftOrders"),
+                    new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("PricedOrders"),
+                    typeof(IBlobStorage),
+                    typeof(ITextSerializer)));
+
+            container.RegisterType<IConferenceDao, ConferenceDao>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(
+                    new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("Conferences")));
 
             container.RegisterType<IPricingService, PricingService>(new ContainerControlledLifetimeManager());
 
@@ -105,6 +117,14 @@ namespace WorkerRoleCommandProcessor
             container.RegisterType<ICommandHandler, SeatsAvailabilityHandler>("SeatsAvailabilityHandler");
             container.RegisterType<ICommandHandler, ThirdPartyProcessorPaymentCommandHandler>("ThirdPartyProcessorPaymentCommandHandler");
             container.RegisterType<ICommandHandler, SeatAssignmentsHandler>("SeatAssignmentsHandler");
+
+            // setup the resolution for the view model generators
+            container.RegisterType<ConferenceViewModelGenerator>(
+                new InjectionConstructor(new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("Conferences"), typeof(ICommandBus)));
+            container.RegisterType<DraftOrderViewModelGenerator>(
+                new InjectionConstructor(new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("DraftOrders")));
+            container.RegisterType<PricedOrderViewModelGenerator>(
+                new InjectionConstructor(new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("PricedOrders")));
 
             // Conference management integration
             container.RegisterType<global::Conference.ConferenceContext>(new TransientLifetimeManager(), new InjectionConstructor("ConferenceManagement"));

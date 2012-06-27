@@ -18,11 +18,27 @@ namespace Registration.IntegrationTests
 
     public class given_a_read_model_database : IDisposable
     {
-        protected string dbName;
+        protected string conferenceDbName;
+        protected string pricedOrderDbName;
+        protected string draftOrderDbName;
 
         public given_a_read_model_database()
         {
-            dbName = this.GetType().Name + "-" + Guid.NewGuid().ToString();
+            this.conferenceDbName = this.CreateDb();
+            this.pricedOrderDbName = this.CreateDb();
+            this.draftOrderDbName = this.CreateDb();
+        }
+
+        public void Dispose()
+        {
+            this.DropDb(this.conferenceDbName);
+            this.DropDb(this.pricedOrderDbName);
+            this.DropDb(this.draftOrderDbName);
+        }
+
+        private string CreateDb()
+        {
+            var dbName = this.GetType().Name + "-" + Guid.NewGuid().ToString();
             using (var context = new ConferenceRegistrationDbContext(dbName))
             {
                 if (context.Database.Exists())
@@ -30,9 +46,11 @@ namespace Registration.IntegrationTests
 
                 context.Database.Create();
             }
+
+            return dbName;
         }
 
-        public void Dispose()
+        private void DropDb(string dbName)
         {
             using (var context = new ConferenceRegistrationDbContext(dbName))
             {

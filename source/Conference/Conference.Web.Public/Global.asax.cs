@@ -13,6 +13,7 @@
 
 namespace Conference.Web.Public
 {
+    using System;
     using System.Linq;
     using System.Runtime.Caching;
     using System.Web;
@@ -21,11 +22,13 @@ namespace Conference.Web.Public
     using Conference.Common;
     using Conference.Web.Utils;
     using Infrastructure.BlobStorage;
+    using Infrastructure.Serialization;
     using Infrastructure.Sql.BlobStorage;
     using Microsoft.Practices.Unity;
     using Microsoft.WindowsAzure.ServiceRuntime;
     using Payments.ReadModel;
     using Payments.ReadModel.Implementation;
+    using Registration.Handlers;
     using Registration.ReadModel;
     using Registration.ReadModel.Implementation;
 
@@ -99,11 +102,23 @@ namespace Conference.Web.Public
             {
                 // repositories used by the application
 
-                container.RegisterType<ConferenceRegistrationDbContext>(new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistration"));
+                container.RegisterType<IBlobStorage, SqlBlobStorage>(new ContainerControlledLifetimeManager(), new InjectionConstructor("BlobStorage"));
+                container.RegisterType<ConferenceRegistrationDbContext>("Conferences", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistration"));
+                container.RegisterType<ConferenceRegistrationDbContext>("DraftOrders", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistrationDraftOrders"));
+                container.RegisterType<ConferenceRegistrationDbContext>("PricedOrders", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistrationPricedOrders"));
                 container.RegisterType<PaymentsReadDbContext>(new TransientLifetimeManager(), new InjectionConstructor("Payments"));
 
                 var cache = new MemoryCache("ReadModel");
-                container.RegisterType<IOrderDao, OrderDao>();
+                container.RegisterType<IOrderDao, OrderDao>(
+                    new ContainerControlledLifetimeManager(),
+                    new InjectionConstructor(
+                        new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("DraftOrders"),
+                        new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("PricedOrders"),
+                        typeof(IBlobStorage),
+                        typeof(ITextSerializer)));
+                container.RegisterType<ConferenceDao>(
+                    new InjectionConstructor(
+                        new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("Conferences")));
                 container.RegisterType<IConferenceDao, CachingConferenceDao>(
                     new ContainerControlledLifetimeManager(),
                     new InjectionConstructor(new ResolvedParameter<ConferenceDao>(), cache));

@@ -24,20 +24,22 @@ namespace Registration.ReadModel.Implementation
 
     public class OrderDao : IOrderDao
     {
-        private readonly Func<ConferenceRegistrationDbContext> contextFactory;
+        private readonly Func<ConferenceRegistrationDbContext> draftOrdersContextFactory;
+        private readonly Func<ConferenceRegistrationDbContext> pricedOrdersContextFactory;
         private IBlobStorage blobStorage;
         private ITextSerializer serializer;
 
-        public OrderDao(Func<ConferenceRegistrationDbContext> contextFactory, IBlobStorage blobStorage, ITextSerializer serializer)
+        public OrderDao(Func<ConferenceRegistrationDbContext> draftOrdersContextFactory, Func<ConferenceRegistrationDbContext> pricedOrdersContextFactory, IBlobStorage blobStorage, ITextSerializer serializer)
         {
-            this.contextFactory = contextFactory;
+            this.draftOrdersContextFactory = draftOrdersContextFactory;
+            this.pricedOrdersContextFactory = pricedOrdersContextFactory;
             this.blobStorage = blobStorage;
             this.serializer = serializer;
         }
 
         public Guid? LocateOrder(string email, string accessCode)
         {
-            using (var context = this.contextFactory.Invoke())
+            using (var context = this.draftOrdersContextFactory.Invoke())
             {
                 var orderProjection = context
                     .Query<DraftOrder>()
@@ -56,7 +58,7 @@ namespace Registration.ReadModel.Implementation
 
         public DraftOrder FindDraftOrder(Guid orderId)
         {
-            using (var context = this.contextFactory.Invoke())
+            using (var context = this.draftOrdersContextFactory.Invoke())
             {
                 return context.Query<DraftOrder>().Include(x => x.Lines).FirstOrDefault(dto => dto.OrderId == orderId);
             }
@@ -64,7 +66,7 @@ namespace Registration.ReadModel.Implementation
 
         public PricedOrder FindPricedOrder(Guid orderId)
         {
-            using (var context = this.contextFactory.Invoke())
+            using (var context = this.pricedOrdersContextFactory.Invoke())
             {
                 return context.Query<PricedOrder>().Include(x => x.Lines).FirstOrDefault(dto => dto.OrderId == orderId);
             }
