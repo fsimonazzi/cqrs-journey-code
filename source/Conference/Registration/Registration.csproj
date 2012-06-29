@@ -114,6 +114,8 @@
     </Compile>
     <Compile Include="ReadModel\ConferenceAlias.cs" />
     <Compile Include="ReadModel\Implementation\CachingConferenceDao.cs" />
+    <Compile Include="ReadModel\Implementation\ConferenceRegistrationDraftOrdersDbContext.cs" />
+    <Compile Include="ReadModel\Implementation\ConferenceRegistrationPricedOrdersDbContext.cs" />
     <Compile Include="ReadModel\Implementation\OrderDao.cs">
       <SubType>Code</SubType>
     </Compile>

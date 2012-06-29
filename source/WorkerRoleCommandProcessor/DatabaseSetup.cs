@@ -33,6 +33,8 @@ namespace WorkerRoleCommandProcessor
             Database.DefaultConnectionFactory = new ServiceConfigurationSettingConnectionFactory(Database.DefaultConnectionFactory);
 
             Database.SetInitializer<ConferenceRegistrationDbContext>(null);
+            Database.SetInitializer<ConferenceRegistrationDraftOrdersDbContext>(null);
+            Database.SetInitializer<ConferenceRegistrationPricedOrdersDbContext>(null);
             Database.SetInitializer<RegistrationProcessDbContext>(null);
             Database.SetInitializer<EventStoreDbContext>(null);
             Database.SetInitializer<MessageLogDbContext>(null);

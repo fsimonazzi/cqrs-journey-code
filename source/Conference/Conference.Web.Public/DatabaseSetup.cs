@@ -31,6 +31,8 @@ namespace Conference.Web.Public
             Database.SetInitializer<BlobStorageDbContext>(null);
             Database.SetInitializer<PaymentsReadDbContext>(null);
             Database.SetInitializer<ConferenceRegistrationDbContext>(null);
+            Database.SetInitializer<ConferenceRegistrationDraftOrdersDbContext>(null);
+            Database.SetInitializer<ConferenceRegistrationPricedOrdersDbContext>(null);
         }
     }
 }

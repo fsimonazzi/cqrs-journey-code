@@ -30,7 +30,7 @@ namespace Registration.Handlers
         IEventHandler<OrderRegistrantAssigned>,
         IEventHandler<OrderConfirmed>, IEventHandler<OrderPaymentConfirmed>
     {
-        private readonly Func<ConferenceRegistrationDbContext> contextFactory;
+        private readonly Func<ConferenceRegistrationDraftOrdersDbContext> contextFactory;
 
         static DraftOrderViewModelGenerator()
         {
@@ -40,7 +40,7 @@ namespace Registration.Handlers
             Mapper.CreateMap<OrderPaymentConfirmed, OrderConfirmed>();
         }
 
-        public DraftOrderViewModelGenerator(Func<ConferenceRegistrationDbContext> contextFactory)
+        public DraftOrderViewModelGenerator(Func<ConferenceRegistrationDraftOrdersDbContext> contextFactory)
         {
             this.contextFactory = contextFactory;
         }

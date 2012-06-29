@@ -23,12 +23,12 @@ namespace Registration.ReadModel.Implementation
     /// <summary>
     /// A repository stored in a database for the views.
     /// </summary>
-    public class ConferenceRegistrationDbContext : DbContext
+    public class ConferenceRegistrationDraftOrdersDbContext : DbContext
     {
         public const string SchemaName = "ConferenceRegistration";
         private readonly RetryPolicy<SqlAzureTransientErrorDetectionStrategy> retryPolicy;
 
-        public ConferenceRegistrationDbContext(string nameOrConnectionString)
+        public ConferenceRegistrationDraftOrdersDbContext(string nameOrConnectionString)
             : base(nameOrConnectionString)
         {
             this.retryPolicy = new RetryPolicy<SqlAzureTransientErrorDetectionStrategy>(new Incremental(3, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(1.5)) { FastFirstRetry = true });
@@ -41,9 +41,9 @@ namespace Registration.ReadModel.Implementation
             base.OnModelCreating(modelBuilder);
 
             // Make the name of the views match exactly the name of the corresponding property.
-            modelBuilder.Entity<Conference>().ToTable("ConferencesView", SchemaName);
-            modelBuilder.Entity<Conference>().HasMany(c => c.Seats).WithRequired();
-            modelBuilder.Entity<SeatType>().ToTable("ConferenceSeatTypesView", SchemaName);
+            modelBuilder.Entity<DraftOrder>().ToTable("OrdersView", SchemaName);
+            modelBuilder.Entity<DraftOrder>().HasMany(c => c.Lines).WithRequired();
+            modelBuilder.Entity<DraftOrderItem>().ToTable("OrderItemsView", SchemaName);
         }
 
         public T Find<T>(Guid id) where T : class

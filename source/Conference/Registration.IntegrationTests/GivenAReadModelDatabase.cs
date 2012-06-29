@@ -14,32 +14,34 @@
 namespace Registration.IntegrationTests
 {
     using System;
+    using System.Data.Entity;
     using Registration.ReadModel.Implementation;
 
     public class given_a_read_model_database : IDisposable
     {
         protected string conferenceDbName;
-        protected string pricedOrderDbName;
         protected string draftOrderDbName;
+        protected string pricedOrderDbName;
 
         public given_a_read_model_database()
         {
-            this.conferenceDbName = this.CreateDb();
-            this.pricedOrderDbName = this.CreateDb();
-            this.draftOrderDbName = this.CreateDb();
+            this.conferenceDbName = this.CreateDb<ConferenceRegistrationDbContext>();
+            this.draftOrderDbName = this.CreateDb<ConferenceRegistrationDraftOrdersDbContext>();
+            this.pricedOrderDbName = this.CreateDb<ConferenceRegistrationPricedOrdersDbContext>();
         }
 
         public void Dispose()
         {
-            this.DropDb(this.conferenceDbName);
-            this.DropDb(this.pricedOrderDbName);
-            this.DropDb(this.draftOrderDbName);
+            this.DropDb<ConferenceRegistrationDbContext>(this.conferenceDbName);
+            this.DropDb<ConferenceRegistrationDraftOrdersDbContext>(this.draftOrderDbName);
+            this.DropDb<ConferenceRegistrationPricedOrdersDbContext>(this.pricedOrderDbName);
         }
 
-        private string CreateDb()
+        private string CreateDb<T>()
+            where T : DbContext
         {
             var dbName = this.GetType().Name + "-" + Guid.NewGuid().ToString();
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = (T)Activator.CreateInstance(typeof(T), dbName))
             {
                 if (context.Database.Exists())
                     context.Database.Delete();
@@ -50,9 +52,10 @@ namespace Registration.IntegrationTests
             return dbName;
         }
 
-        private void DropDb(string dbName)
+        private void DropDb<T>(string dbName)
+            where T : DbContext
         {
-            using (var context = new ConferenceRegistrationDbContext(dbName))
+            using (var context = (T)Activator.CreateInstance(typeof(T), dbName))
             {
                 if (context.Database.Exists())
                     context.Database.Delete();

@@ -24,12 +24,12 @@ namespace Registration.ReadModel.Implementation
 
     public class OrderDao : IOrderDao
     {
-        private readonly Func<ConferenceRegistrationDbContext> draftOrdersContextFactory;
-        private readonly Func<ConferenceRegistrationDbContext> pricedOrdersContextFactory;
+        private readonly Func<ConferenceRegistrationDraftOrdersDbContext> draftOrdersContextFactory;
+        private readonly Func<ConferenceRegistrationPricedOrdersDbContext> pricedOrdersContextFactory;
         private IBlobStorage blobStorage;
         private ITextSerializer serializer;
 
-        public OrderDao(Func<ConferenceRegistrationDbContext> draftOrdersContextFactory, Func<ConferenceRegistrationDbContext> pricedOrdersContextFactory, IBlobStorage blobStorage, ITextSerializer serializer)
+        public OrderDao(Func<ConferenceRegistrationDraftOrdersDbContext> draftOrdersContextFactory, Func<ConferenceRegistrationPricedOrdersDbContext> pricedOrdersContextFactory, IBlobStorage blobStorage, ITextSerializer serializer)
         {
             this.draftOrdersContextFactory = draftOrdersContextFactory;
             this.pricedOrdersContextFactory = pricedOrdersContextFactory;

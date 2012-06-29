@@ -35,10 +35,10 @@ namespace Registration.Handlers
         IEventHandler<SeatCreated>,
         IEventHandler<SeatUpdated>
     {
-        private readonly Func<ConferenceRegistrationDbContext> contextFactory;
+        private readonly Func<ConferenceRegistrationPricedOrdersDbContext> contextFactory;
         private readonly ObjectCache seatDescriptionsCache;
 
-        public PricedOrderViewModelGenerator(Func<ConferenceRegistrationDbContext> contextFactory)
+        public PricedOrderViewModelGenerator(Func<ConferenceRegistrationPricedOrdersDbContext> contextFactory)
         {
             this.contextFactory = contextFactory;
             this.seatDescriptionsCache = new MemoryCache("SeatDescriptionsCache");
@@ -225,9 +225,9 @@ This read model generator has an expectation that the EventBus will deliver mess
                         eventVersion,
                         pricedOrder.OrderVersion));
             }
-        } 
-        
-        private List<PricedOrderLineSeatTypeDescription> GetSeatTypeDescriptions(IEnumerable<Guid> seatTypeIds, ConferenceRegistrationDbContext context)
+        }
+
+        private List<PricedOrderLineSeatTypeDescription> GetSeatTypeDescriptions(IEnumerable<Guid> seatTypeIds, ConferenceRegistrationPricedOrdersDbContext context)
         {
             var result = new List<PricedOrderLineSeatTypeDescription>();
             var notCached = new List<Guid>();

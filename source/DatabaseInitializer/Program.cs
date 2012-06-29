@@ -49,6 +49,8 @@ namespace DatabaseInitializer
             Database.SetInitializer<MessageLogDbContext>(null);
             Database.SetInitializer<BlobStorageDbContext>(null);
             Database.SetInitializer<ConferenceRegistrationDbContext>(null);
+            Database.SetInitializer<ConferenceRegistrationDraftOrdersDbContext>(null);
+            Database.SetInitializer<ConferenceRegistrationPricedOrdersDbContext>(null);
             Database.SetInitializer<RegistrationProcessDbContext>(null);
             Database.SetInitializer<PaymentsDbContext>(null);
 
@@ -61,6 +63,8 @@ namespace DatabaseInitializer
                     new PaymentsDbContext(connectionString),
                     new RegistrationProcessDbContext(connectionString),
                     new ConferenceRegistrationDbContext(connectionString),
+                    new ConferenceRegistrationDraftOrdersDbContext(connectionString),
+                    new ConferenceRegistrationPricedOrdersDbContext(connectionString),
                 };
 
             foreach (DbContext context in contexts)

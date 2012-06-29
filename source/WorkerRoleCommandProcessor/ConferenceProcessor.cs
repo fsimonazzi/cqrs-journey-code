@@ -19,13 +19,11 @@ namespace WorkerRoleCommandProcessor
     using System.Linq;
     using System.Threading;
     using Infrastructure;
-    using Infrastructure.BlobStorage;
     using Infrastructure.Database;
     using Infrastructure.Messaging;
     using Infrastructure.Messaging.Handling;
     using Infrastructure.Processes;
     using Infrastructure.Serialization;
-    using Infrastructure.Sql.BlobStorage;
     using Infrastructure.Sql.Database;
     using Infrastructure.Sql.Processes;
     using Microsoft.Practices.Unity;
@@ -92,22 +90,13 @@ namespace WorkerRoleCommandProcessor
                 new TransientLifetimeManager(),
                 new InjectionConstructor(new ResolvedParameter<Func<DbContext>>("payments"), typeof(IEventBus)));
 
-            container.RegisterType<ConferenceRegistrationDbContext>("Conferences", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistration"));
-            container.RegisterType<ConferenceRegistrationDbContext>("DraftOrders", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistrationDraftOrders"));
-            container.RegisterType<ConferenceRegistrationDbContext>("PricedOrders", new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistrationPricedOrders"));
+            container.RegisterType<ConferenceRegistrationDbContext>(new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistration"));
+            container.RegisterType<ConferenceRegistrationDraftOrdersDbContext>(new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistrationDraftOrders"));
+            container.RegisterType<ConferenceRegistrationPricedOrdersDbContext>(new TransientLifetimeManager(), new InjectionConstructor("ConferenceRegistrationPricedOrders"));
 
-            container.RegisterType<IOrderDao, OrderDao>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionConstructor(
-                    new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("DraftOrders"),
-                    new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("PricedOrders"),
-                    typeof(IBlobStorage),
-                    typeof(ITextSerializer)));
+            container.RegisterType<IOrderDao, OrderDao>(new ContainerControlledLifetimeManager());
 
-            container.RegisterType<IConferenceDao, ConferenceDao>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionConstructor(
-                    new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("Conferences")));
+            container.RegisterType<IConferenceDao, ConferenceDao>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<IPricingService, PricingService>(new ContainerControlledLifetimeManager());
 
@@ -117,14 +106,6 @@ namespace WorkerRoleCommandProcessor
             container.RegisterType<ICommandHandler, SeatsAvailabilityHandler>("SeatsAvailabilityHandler");
             container.RegisterType<ICommandHandler, ThirdPartyProcessorPaymentCommandHandler>("ThirdPartyProcessorPaymentCommandHandler");
             container.RegisterType<ICommandHandler, SeatAssignmentsHandler>("SeatAssignmentsHandler");
-
-            // setup the resolution for the view model generators
-            container.RegisterType<ConferenceViewModelGenerator>(
-                new InjectionConstructor(new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("Conferences"), typeof(ICommandBus)));
-            container.RegisterType<DraftOrderViewModelGenerator>(
-                new InjectionConstructor(new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("DraftOrders")));
-            container.RegisterType<PricedOrderViewModelGenerator>(
-                new InjectionConstructor(new ResolvedParameter<Func<ConferenceRegistrationDbContext>>("PricedOrders")));
 
             // Conference management integration
             container.RegisterType<global::Conference.ConferenceContext>(new TransientLifetimeManager(), new InjectionConstructor("ConferenceManagement"));

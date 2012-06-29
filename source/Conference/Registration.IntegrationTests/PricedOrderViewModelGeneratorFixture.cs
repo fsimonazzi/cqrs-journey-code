@@ -31,8 +31,8 @@ namespace Registration.IntegrationTests.PricedOrderViewModelGeneratorFixture
         public given_a_read_model_generator()
         {
             var blobStorage = new MemoryBlobStorage();
-            this.sut = new PricedOrderViewModelGenerator(() => new ConferenceRegistrationDbContext(this.pricedOrderDbName));
-            this.dao = new OrderDao(() => new ConferenceRegistrationDbContext(this.draftOrderDbName), () => new ConferenceRegistrationDbContext(this.pricedOrderDbName), blobStorage, new JsonTextSerializer());
+            this.sut = new PricedOrderViewModelGenerator(() => new ConferenceRegistrationPricedOrdersDbContext(this.pricedOrderDbName));
+            this.dao = new OrderDao(() => new ConferenceRegistrationDraftOrdersDbContext(this.draftOrderDbName), () => new ConferenceRegistrationPricedOrdersDbContext(this.pricedOrderDbName), blobStorage, new JsonTextSerializer());
         }
 
         public class given_some_initial_seats : given_a_read_model_generator

@@ -30,8 +30,8 @@ namespace Registration.IntegrationTests.DraftOrderViewModelGeneratorFixture
         public given_a_read_model_generator()
         {
             var blobStorage = new MemoryBlobStorage();
-            this.sut = new DraftOrderViewModelGenerator(() => new ConferenceRegistrationDbContext(this.draftOrderDbName));
-            this.dao = new OrderDao(() => new ConferenceRegistrationDbContext(this.draftOrderDbName), () => new ConferenceRegistrationDbContext(this.pricedOrderDbName), blobStorage, new JsonTextSerializer());
+            this.sut = new DraftOrderViewModelGenerator(() => new ConferenceRegistrationDraftOrdersDbContext(this.draftOrderDbName));
+            this.dao = new OrderDao(() => new ConferenceRegistrationDraftOrdersDbContext(this.draftOrderDbName), () => new ConferenceRegistrationPricedOrdersDbContext(this.pricedOrderDbName), blobStorage, new JsonTextSerializer());
         }
     }
 
